@@ -25,56 +25,38 @@ def seleccionar_ruta_txt():
     print("No se seleccionó ningun archivo.")
   return ruta
 
-# # Rutas
+# Rutas
 origen = seleccionar_ruta()
-contador = 1
-for root, _, files in os.walk(origen):
-  files.sort()
-  print(files)
-  print("Len: ", len(files))
-  print(f'{contador}: ############################################################################')
-  contador += 1
-# destino = seleccionar_ruta()
-# txt_file = seleccionar_ruta_txt()
+destino = seleccionar_ruta()
+txt_file = seleccionar_ruta_txt()
 
-# # Leer nombres desde el archivo de texto
-# with open(txt_file, "r", encoding="utf-8") as f:
-#   nombres = [line.strip() for line in f if line.strip()]
+# Leer nombres desde el archivo de texto
+with open(txt_file, "r", encoding="utf-8") as f:
+  nombres = [line.strip() for line in f if line.strip()]
 
-# if origen and destino and txt_file:
-#   print(f"Realizando operaciones en: {destino}")
+if origen and destino and txt_file:
+  print(f"Realizando operaciones en: {destino}")
 
-#   # Crear carpeta de destino si no existe
-#   Path(destino).mkdir(parents=True, exist_ok=True)
+  # Crear carpeta de destino si no existe
+  Path(destino).mkdir(parents=True, exist_ok=True)
 
-  # Recorrer árbol de archivos solo una vez (mejor rendimiento)
-  # contador = 1
-  # for root, _, files in os.walk(origen):
-    # for file in files:
-      # if file.endswith(".xml"):
-        # for i, nombre in enumerate(nombres):
-        #   print(f"Comparando {nombre} y su posicion {i}")
-        #   try:
-        #     if file.lower().startswith(nombre.lower().strip()):
-        #       origen_file = Path(root) / file
-        #       destino_file = Path(destino) / file
-              
-        #       print(f"Comparando {origen_file.stem} con {nombre}")
+  contador = 0
+  for root, _, files in os.walk(origen):
+    files.sort()
+    nombres.sort()
 
-        #       try:
-        #         shutil.copy2(origen_file, destino_file)
-        #         print(f"{contador}: Copiado {origen_file.stem} a {destino_file}")
-        #       except Exception as e:
-        #         print(f"Error copiando {origen}: {e}")
-              
-        #       contador += 1 #Elemento para tener un control visual sobre los archivos copiados
-        #       nombres.pop(i) # Eliminar el nombre una vez que se ha encontrado para evitar evualuar datos innecesarios
-        #       break  # Ya coincide con un nombre, no seguir comparando
+    for nombre in nombres:
+      index = bisect.bisect_left(files, nombre.upper().strip())
 
-        #     else:
-        #       print(f"{contador} No coincide {file} con {nombre}")
+      if index < len(files) and files[index].lower().startswith(nombre.lower().strip()):
+        origen_file = Path(root) / files[index]
+        destino_file = Path(destino) / files[index]
 
-        #   except Exception as e:
-        #     print(f"Error: {e}")
-  
+        try:
+          shutil.copy2(origen_file, destino_file)
+          print(f"{contador}: Copiado de {origen_file} a {destino_file}")
+        except Exception as e:
+          print(f"Error copiando {origen}: {e}")
+        contador += 1
+
 print("Operación completada.")
