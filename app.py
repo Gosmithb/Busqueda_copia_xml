@@ -86,63 +86,66 @@ txt_file = seleccionar_ruta_txt()
 ########################################################################
 
 # Leer nombres desde el archivo de texto
-with open(txt_file, "r", encoding="utf-8") as f:
-  nombres = [line.strip().split(",") for line in f if line.strip()]
+# with open(txt_file, "r", encoding="utf-8") as f:
+#   nombres = [line.strip().split(",") for line in f if line.strip()]
 
-if origen and destino and txt_file:
-  print(f"Realizando operaciones en: {destino}")
+# if origen and destino and txt_file:
+#   print(f"Realizando operaciones en: {destino}")
 
-  contador = 0
-  for root, _, files in os.walk(origen):
-    files.sort()
-    nombres.sort()
+#   contador = 0
+#   for root, _, files in os.walk(origen):
+#     files.sort()
+#     nombres.sort()
 
-    for nombre in nombres:
-      index = bisect.bisect_left(files, nombre[0].upper().strip())
+#     for nombre in nombres:
+#       index = bisect.bisect_left(files, nombre[0].upper().strip())
 
-      if index < len(files) and files[index].lower().startswith(nombre[0].lower().strip()):
-        origen_path = Path(root) / files[index]
-        destino_path = Path(destino) / files[index]
+#       if index < len(files) and os.path.splitext(files[index])[0].upper().strip() == nombre[0].upper().strip():
+#         origen_path = Path(root) / files[index]
+#         destino_path = Path(destino) / files[index]
 
-        try:
-          destino_path.parent.mkdir(parents=True, exist_ok=True)
-          shutil.copy2(origen_path, destino_path)
+#         try:
+#           destino_path.parent.mkdir(parents=True, exist_ok=True)
+#           shutil.copy2(origen_path, destino_path)
+          
+#           # Crear querys para actualizar "retimbrar"
+#           # with open(f"UpdateRetimbrarConDiferencias.txt", "a", encoding="utf-8") as f:
+#           #   f.write(f"UPDATE Hw_nomie122024c1bv2 SET retimbrar = 'B' WHERE rfc = '{nombre[1]}' and periodo = '202412c1'\n")
 
-          # Crear querys para actualizar "retimbrar"
-          # with open(f"UpdateRetimbrarConDiferencias.txt", "a", encoding="utf-8") as f:
-          #   f.write(f"UPDATE Hw_nomie122024c1bv2 SET retimbrar = 'B' WHERE rfc = '{nombre[1]}' and periodo = '202412c1'\n")
-
-          print(f"{contador}: Copiado de {origen_path} a {destino_path}")
-          contador += 1
-        except Exception as e:
-          print(f"Error copiando {origen}: {e}")
+#           print(f"{contador}: Copiado de {origen_path} a {destino_path}")
+#           contador += 1
+#         except Exception as e:
+#           print(f"Error copiando {origen}: {e}")
 
 ####################################################################
 
 # Copiar archivos de origen a destino, creando carpetas si no existen
 
-# if origen and destino:
-#     print(f"Realizando operaciones en: {destino}")
+if origen and destino:
+    print(f"Realizando operaciones en: {destino}")
 
-#     contador = 0
-#     for root, _, files in os.walk(origen):
-#         # Crear las carpetas (aunque estén vacías)
-#         rel_path = Path(root).relative_to(origen)
-#         destino_dir = Path(destino) / rel_path
-#         destino_dir.mkdir(parents=True, exist_ok=True)
+    contador = 0
+    for root, _, files in os.walk(origen):
+        # Crear las carpetas (aunque estén vacías)
+        rel_path = Path(root).relative_to(origen)
+        destino_dir = Path(destino) / rel_path
+        destino_dir.mkdir(parents=True, exist_ok=True)
 
-#         for file in files:
-#             origen_path = Path(root) / file
-#             destino_path = destino_dir / file
+        for file in files:
+            if not file.endswith(".xml"):
+                continue
+            
+            origen_path = Path(root) / file
+            destino_path = destino_dir / file
 
-#             try:
-#                 destino_path.parent.mkdir(parents=True, exist_ok=True)
-#                 shutil.copy2(origen_path, destino_path)
+            try:
+                destino_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(origen_path, destino_path)
 
-#                 print(f"{contador}: Copiado de {origen} a {destino_path}")
-#                 contador += 1
-#             except Exception as e:
-#                 print(f"Error copiando {origen}: {e}")
+                print(f"{contador}: Copiado de {origen} a {destino_path}")
+                contador += 1
+            except Exception as e:
+                print(f"Error copiando {origen}: {e}")
 
 # ######################################################
 
