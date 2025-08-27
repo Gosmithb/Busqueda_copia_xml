@@ -32,7 +32,7 @@ def seleccionar_ruta_txt():
 # Rutas
 origen = seleccionar_ruta()
 destino = seleccionar_ruta()
-txt_file = seleccionar_ruta_txt()
+# txt_file = seleccionar_ruta_txt()
 
 # ##################################################################
 # Obtener nombres de archivo en destino (sin rutas)
@@ -119,8 +119,7 @@ txt_file = seleccionar_ruta_txt()
 
 ####################################################################
 
-# Copiar archivos de origen a destino, creando carpetas si no existen
-
+# Copiar archivos de origen a destino, creando carpetas si no existen filtrado por .xml
 if origen and destino:
     print(f"Realizando operaciones en: {destino}")
 
@@ -134,7 +133,7 @@ if origen and destino:
         for file in files:
             if not file.endswith(".xml"):
                 continue
-            
+
             origen_path = Path(root) / file
             destino_path = destino_dir / file
 
