@@ -30,12 +30,12 @@ def seleccionar_ruta_txt():
     return ruta
 
 herramienta_elegida = input("""
-                            Herramientas\n
-                            (1) Eliminar archivos en origen que coincidan por nombre con destino (De DESTINO toman los nombres y de ORIGEN elimina los que coincidan)\n
-                            (2) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, filtrado por .xml\n
-                            (3) Insertar XML a base de datos\n
-                            Seleccione una opción (1-3): 
-                        """)
+        Herramientas
+        (1) Eliminar archivos en origen que coincidan por nombre con destino (De DESTINO toman los nombres y de ORIGEN elimina los que coincidan)
+        (2) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, filtrado por .xml
+        (3) Insertar o descargar XML a DB SQLite
+        Seleccione una opción (1-3): 
+    """)
 
 if herramienta_elegida == "1":
 # ##################################################################
