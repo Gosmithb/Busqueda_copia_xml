@@ -32,14 +32,15 @@ def seleccionar_ruta_txt():
 herramienta_elegida = input("""
         Herramientas
         (1) Eliminar archivos en origen que coincidan por nombre con destino (De DESTINO toman los nombres y de ORIGEN elimina los que coincidan)
-        (2) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, filtrado por .xml
-        (3) Insertar o descargar XML a DB SQLite
+        (2) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, basado en lista txt
+        (3) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, filtrado por .xml
+        (4) Insertar o descargar XML a DB SQLite
         Seleccione una opción (1-3): 
     """)
 
-if herramienta_elegida == "1":
 # ##################################################################
 # Obtener nombres de archivo en destino (sin rutas)
+if herramienta_elegida == "1":
 
     origen = seleccionar_ruta()
     destino = seleccionar_ruta()
@@ -65,8 +66,8 @@ if herramienta_elegida == "1":
 
 ########################################################################
 
+# Copiar archivos de origen a destino, creando carpetas si no existen basado en lista txt
 elif herramienta_elegida == "2":
-# Leer nombres desde el archivo de texto
 
     origen = seleccionar_ruta()
     destino = seleccionar_ruta()
@@ -94,10 +95,6 @@ elif herramienta_elegida == "2":
                 destino_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(origen_path, destino_path)
             
-                # Crear querys para actualizar "retimbrar"
-                # with open(f"UpdateRetimbrarConDiferencias.txt", "a", encoding="utf-8") as f:
-                #   f.write(f"UPDATE Hw_nomie122024c1bv2 SET retimbrar = 'B' WHERE rfc = '{nombre[1]}' and periodo = '202412c1'\n")
-
                 print(f"{contador}: Copiado de {origen_path} a {destino_path}")
                 contador += 1
             except Exception as e:
@@ -105,8 +102,8 @@ elif herramienta_elegida == "2":
 
 ####################################################################
 
-elif herramienta_elegida == "3":
 # Copiar archivos de origen a destino, creando carpetas si no existen filtrado por .xml
+elif herramienta_elegida == "3":
 
     origen = seleccionar_ruta()
     destino = seleccionar_ruta()
@@ -146,7 +143,7 @@ elif herramienta_elegida == "4":
     conn = sqlite3.connect(cfdis_nominas_db_ruta)
     cursor = conn.cursor()
     errores_log = "Errores_log.txt"
-    nombre_tabla = "CFDIs_Nominas_Posibles_Cancelados"
+    nombre_tabla = input("Nombre de la tabla a utilizar (ejemplo: CFDIs_2024_concentrado): ")
 
     def parse_fecha_iso(fecha_str: str) -> str:
         if not fecha_str:
@@ -190,6 +187,7 @@ elif herramienta_elegida == "4":
 
                             receptor_elem = root.find('.//cfdi:Receptor', ns)
                             nomina_elem = root.find('.//nomina12:Nomina', ns)
+                            nomina_receptor_elem = root.find('.//nomina12:Receptor', ns)
                             timbre_fiscal_digital_elem = root.find('.//tfd:TimbreFiscalDigital', ns)
                             entidad_sncf_elem = nomina_elem.find('.//nomina12:EntidadSNCF', ns) if nomina_elem is not None else None
                             nomina_deducciones_elem = nomina_elem.find('.//nomina12:Deducciones', ns) if nomina_elem is not None else None
@@ -214,6 +212,7 @@ elif herramienta_elegida == "4":
                             origen_recurso = entidad_sncf_elem.attrib.get('OrigenRecurso', '') if entidad_sncf_elem is not None else ''
                             tipo_nomina = nomina_elem.attrib.get('TipoNomina', '')
                             total_deducciones = float(nomina_elem.attrib.get('TotalDeducciones', '0.00') or '0.00')
+                            nomina_elem.attrib.get('Puesto', '')
 
                             # Datos timbre fiscal digital
                             uuid = timbre_fiscal_digital_elem.attrib.get('UUID', '')
@@ -235,23 +234,22 @@ elif herramienta_elegida == "4":
                                     sub_total,
                                     total,
                                     xml_content
-                                )
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            """, (
-                                llave, 
-                                domicilio_fiscal, 
-                                rfc_receptor, 
-                                origen_recurso, 
-                                tipo_nomina,
-                                uuid, 
-                                total_deducciones,
-                                total_impuestos_retenidos, 
-                                parse_fecha_iso(fecha), 
-                                parse_fecha_iso(fecha_pago), 
-                                parse_fecha_iso(fecha_timbrado), 
-                                sub_total, 
-                                total, 
-                                xml_content
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                """, (
+                                    llave, 
+                                    domicilio_fiscal, 
+                                    rfc_receptor, 
+                                    origen_recurso, 
+                                    tipo_nomina,
+                                    uuid, 
+                                    total_deducciones,
+                                    total_impuestos_retenidos, 
+                                    parse_fecha_iso(fecha), 
+                                    parse_fecha_iso(fecha_pago), 
+                                    parse_fecha_iso(fecha_timbrado), 
+                                    sub_total, 
+                                    total, 
+                                    xml_content
                             ))
                             
                             print(f"Insertado: {ruta_archivo} en {nombre_tabla}")
