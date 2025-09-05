@@ -65,7 +65,6 @@ if herramienta_elegida == "1":
                     print(f"Error al eliminar {ruta_archivo}: {e}")
 
 ########################################################################
-
 # Copiar archivos de origen a destino, creando carpetas si no existen basado en lista txt
 elif herramienta_elegida == "2":
 
@@ -101,7 +100,6 @@ elif herramienta_elegida == "2":
                 print(f"Error copiando {origen}: {e}")
 
 ####################################################################
-
 # Copiar archivos de origen a destino, creando carpetas si no existen filtrado por .xml
 elif herramienta_elegida == "3":
 
@@ -135,7 +133,6 @@ elif herramienta_elegida == "3":
                     print(f"Error copiando {origen}: {e}")
 
 ##########################################################
-
 elif herramienta_elegida == "4":
 # Insertar xml a base de datos
 
