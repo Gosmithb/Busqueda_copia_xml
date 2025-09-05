@@ -233,8 +233,9 @@ elif herramienta_elegida == "4":
                                     fecha_timbrado,
                                     sub_total,
                                     total,
-                                    xml_content
-                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    xml_content,
+                                    numero_plaza
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                                 """, (
                                     llave, 
                                     domicilio_fiscal, 
@@ -249,7 +250,8 @@ elif herramienta_elegida == "4":
                                     parse_fecha_iso(fecha_timbrado), 
                                     sub_total, 
                                     total, 
-                                    xml_content
+                                    xml_content,
+                                    nomina_receptor_elem
                             ))
                             
                             print(f"Insertado: {ruta_archivo} en {nombre_tabla}")
