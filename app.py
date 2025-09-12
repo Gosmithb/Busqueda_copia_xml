@@ -144,7 +144,7 @@ elif herramienta_elegida == "4":
         port="port"
     )
 
-    nombre_tabla = "nominas_2025.cfdi_nominas"
+    nombre_tabla = "nominas_2024.cfdi_nominas"
     errores_log = "Errores_log.txt"
     cursor = conn.cursor()
 
@@ -244,8 +244,9 @@ elif herramienta_elegida == "4":
                                     total_impuestos_retenidos,
                                     sub_total,
                                     total,
-                                    xml_content
-                                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    xml_content,
+                                    vigente
+                                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                                 ON CONFLICT (uuid) DO NOTHING
                                 """, (
                                     llave, 
@@ -262,7 +263,8 @@ elif herramienta_elegida == "4":
                                     total_impuestos_retenidos, 
                                     sub_total, 
                                     total, 
-                                    xml_content #Se guarda como tipo xml (TEXT en sqlite, XML en postgres)
+                                    xml_content, #Se guarda como tipo xml (TEXT en sqlite, XML en postgres)
+                                    True
                             )) 
                             
                             print(f"Insertado: {ruta_archivo} en {nombre_tabla}")
@@ -286,7 +288,7 @@ elif herramienta_elegida == "4":
         for nombre in nombres:
             cursor.execute(f"SELECT xml_content FROM {nombre_tabla} WHERE llave = %s OR uuid = %s", (nombre, nombre))
             row = cursor.fetchone()
-            if row is None: 
+            if row is None:
                 print(f"No se encontró XML para: {nombre}")
                 continue
                 
