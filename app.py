@@ -32,13 +32,13 @@ def seleccionar_ruta_txt():
     return ruta
 
 herramienta_elegida = input("""
-        Herramientas
-        (1) Eliminar archivos en origen que coincidan por nombre con destino (De DESTINO toman los nombres y de ORIGEN elimina los que coincidan)
-        (2) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, basado en lista txt
-        (3) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, filtrado por .xml
-        (4) Insertar o descargar XML a DB postgresql
-        Seleccione una opción (1-4): 
-    """)
+Herramientas
+(1) Eliminar archivos en origen que coincidan por nombre con destino (De DESTINO toman los nombres y de ORIGEN elimina los que coincidan)
+(2) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, basado en lista txt
+(3) Copiar archivos de origen a destino, creando estructura de carpetas si no existen, filtrado por .xml
+(4) Insertar o descargar XML a DB postgresql
+Seleccione una opción (1-4): 
+""")
 
 # ##################################################################
 # Obtener nombres de archivo en destino (sin rutas)
@@ -135,18 +135,18 @@ elif herramienta_elegida == "3":
                     print(f"Error copiando {origen}: {e}")
 
 ####################################################################
-# Insertar o descargar XML a DB SQLite
+# Insertar o descargar XML a DB Postgresql
 elif herramienta_elegida == "4":
 
     conn = psycopg2.connect(
         host="host",
-        database="bd",
+        database="database",
         user="user",
         password="password",
         port="port"
     )
 
-    nombre_tabla = "nominas_2020.cfdi_nominas"
+    nombre_tabla = "nominas_2025.cfdi_nominas"
     errores_log = "Errores_log.txt"
     cursor = conn.cursor()
 
@@ -166,10 +166,10 @@ elif herramienta_elegida == "4":
         return None
 
 
-    opcion = input("(1) Insertar XML a BD\n(2) Descargar XML de BD desde lista txt\nSeleccione una opción (1 o 2): ")
+    opcion = input("(1) Insertar XML a BD\n(2) Descargar XML de BD desde lista txt\n(3) Descargar y marcar como cancelado (En caso de descargar para cancelar CFDI)\nSeleccione una opción (1-3): ")
 
     # Guardar xml en sqlite
-    def InsertarXML():
+    def insertarXML():
         origen = seleccionar_ruta()
         with open(errores_log, "a", encoding="utf-8") as log_file:
             for rootPath, _, files in os.walk(origen):
@@ -224,7 +224,7 @@ elif herramienta_elegida == "4":
                             origen_recurso = entidad_sncf_elem.attrib.get('OrigenRecurso', '') if entidad_sncf_elem is not None else None
                             tipo_nomina = nomina_elem.attrib.get('TipoNomina', '')
                             total_deducciones = float(nomina_elem.attrib.get('TotalDeducciones', '0.00') or '0.00')
-                            numero_plaza = nomina_receptor_elem.attrib.get('Puesto', '') if nomina_receptor_elem is not None else None
+                            numero_plaza = nomina_receptor_elem.attrib.get('Puesto') if nomina_receptor_elem is not None else None
 
                             # Datos timbre fiscal digital
                             uuid = timbre_fiscal_digital_elem.attrib.get('UUID', '')
@@ -277,7 +277,7 @@ elif herramienta_elegida == "4":
         conn.commit()
 
     # Descargar archivos .xml de la bd
-    def DescargarXMLdeBD():
+    def descargarEliminarXMLdeBD(eliminar: bool = False):
         txt_file = seleccionar_ruta_txt()
         destino = seleccionar_ruta()
 
@@ -300,13 +300,21 @@ elif herramienta_elegida == "4":
 
             with open(f"{destino}/{nombre}.xml", "w", encoding="utf-8") as xml_file:
                 xml_file.write(xml_content)
+
+            if eliminar:
+                cursor.execute(
+                    f"UPDATE {nombre_tabla} SET vigente = False WHERE llave = %s OR uuid = %s",
+                    (nombre, nombre)
+                )
             
-            print(f"Descargado: {destino}/{nombre}.xml")
+            print(f"Descargado: {destino}/{nombre}.xml de {nombre_tabla}")
 
     if opcion == "1":
-        InsertarXML()
+        insertarXML()
     elif opcion == "2":
-        DescargarXMLdeBD()
+        descargarEliminarXMLdeBD(eliminar=False)
+    elif opcion == "3":
+        descargarEliminarXMLdeBD(eliminar=True)
     else:
         print("Opción no válida.")
 
