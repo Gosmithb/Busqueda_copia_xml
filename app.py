@@ -1,12 +1,10 @@
 from datetime import datetime
-from dbm import sqlite3
 import os
 import shutil
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog
 import bisect
-import sqlite3
 import xml.etree.ElementTree as ET
 
 import psycopg2
